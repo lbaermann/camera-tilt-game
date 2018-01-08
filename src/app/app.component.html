@@ -1,6 +1,6 @@
 <div class="background">
 
-  <div class="dot player"></div>
-  <div class="dot whole" style="top: 20%;"></div>
+  <div #player class="dot player" [style.top]="playerTop + '%'" [style.left]="playerLeft + '%'"></div>
+  <div #whole class="dot whole" [style.top]="wholeTop + '%'" [style.left]="wholeLeft + '%'"></div>
 
 </div>
