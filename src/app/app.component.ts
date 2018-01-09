@@ -46,8 +46,9 @@ export class AppComponent implements OnInit {
   }
 
   private randomlyPlaceWhole() {
-    this.whole.x = Math.random() * window.innerWidth;
-    this.whole.y = Math.random() * window.innerHeight;
+    const radius = this.whole.radius;
+    this.whole.centerX = radius + Math.random() * (window.innerWidth - 2 * radius);
+    this.whole.centerY = radius + Math.random() * (window.innerHeight - 2 * radius);
   }
 
   private gameOver() {

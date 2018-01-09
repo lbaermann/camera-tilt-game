@@ -15,7 +15,7 @@
 .center-text {
   font-size: xx-large;
   background: rgba(255,255,255,0.76);
-  color: green;
+  color: red;
   z-index: 5;
   border-radius: 20px;
   padding: 5px;
