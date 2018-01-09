@@ -11,9 +11,12 @@ export class AppComponent implements OnInit {
   player = new DotModel();
   whole = new DotModel();
 
+  get currentFriction() {
+    return DotModel.friction;
+  }
+
   ngOnInit(): void {
-    this.player.centerX = window.innerWidth / 2;
-    this.player.centerY = window.innerHeight / 2;
+    this.centerPlayer();
     this.whole.radius = 20;
     this.randomlyPlaceWhole();
 
@@ -21,6 +24,11 @@ export class AppComponent implements OnInit {
 
     this.initKeyControl();
     this.initTiltControl();
+  }
+
+  private centerPlayer() {
+    this.player.centerX = window.innerWidth / 2;
+    this.player.centerY = window.innerHeight / 2;
   }
 
   private initTiltControl() {
@@ -56,7 +64,9 @@ export class AppComponent implements OnInit {
     this.player.advanceOneStep();
 
     if (this.player.touches(this.whole)) {
-      console.log('Touch!');
+      this.randomlyPlaceWhole();
+      this.centerPlayer();
+      DotModel.friction = 0.8 + Math.random() * 0.19; // From 0.8 to 0.99 is ok
     }
   }
 

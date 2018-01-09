@@ -1,6 +1,6 @@
-const friction = 0.95;
-
 export class DotModel {
+
+  static friction = 0.95;
 
   x: number;
   y: number;
@@ -32,8 +32,8 @@ export class DotModel {
     this.y += this.ySpeed;
 
     // Friction
-    this.xSpeed *= friction;
-    this.ySpeed *= friction;
+    this.xSpeed *= DotModel.friction;
+    this.ySpeed *= DotModel.friction;
   }
 
   touches(other: DotModel): boolean {
