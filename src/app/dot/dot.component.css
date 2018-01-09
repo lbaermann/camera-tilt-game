@@ -1,0 +1,13 @@
+.dot {
+  border-radius: 100%;
+  border: 10px solid;
+  position: absolute;
+}
+
+.player {
+  border-color: yellow;
+}
+
+.whole {
+  border: 20px lightgray solid;
+}

@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {DotModel} from './dot/dot.model';
 
 @Component({
   selector: 'app-root',
@@ -6,32 +7,32 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  playerTop: number;
-  playerLeft: number;
-  wholeTop: number;
-  wholeLeft: number;
+
+  player = new DotModel();
+  whole = new DotModel();
 
   ngOnInit(): void {
-    this.playerLeft = 50;
-    this.playerTop = 50;
+    this.player.x = 50;
+    this.player.y = 50;
     this.randomlyPlaceWhole();
+
+    setInterval(() => this.gameLoop(), 10);
 
     window.onkeydown = e => {
       const key = e.keyCode ? e.keyCode : e.which;
-      const amount = 20;
-      console.log(key);
+      const amount = 2;
       switch (key) {
         case 37: // left key
-          this.playerLeft -= amount;
+          this.player.xSpeed -= amount;
           break;
         case 38: // up key
-          this.playerTop -= amount;
+          this.player.ySpeed -= amount;
           break;
         case 39: // right key
-          this.playerLeft += amount;
+          this.player.xSpeed  += amount;
           break;
         case 40: // down key
-          this.playerTop += amount;
+          this.player.ySpeed += amount;
           break;
 
       }
@@ -39,9 +40,13 @@ export class AppComponent implements OnInit {
 
   }
 
+  gameLoop() {
+    this.player.advanceOneStep();
+  }
+
   randomlyPlaceWhole() {
-    this.wholeTop = Math.random() * window.innerHeight;
-    this.wholeLeft = Math.random() * window.innerWidth;
+    this.whole.x = Math.random() * window.innerWidth;
+    this.whole.y = Math.random() * window.innerHeight;
   }
 
 }
