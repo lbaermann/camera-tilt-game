@@ -18,7 +18,20 @@ export class AppComponent implements OnInit {
 
     setInterval(() => this.gameLoop(), 10);
 
-    window.onkeydown = e => {
+    this.initKeyControl();
+    this.initTiltControl();
+  }
+
+  private initTiltControl() {
+    window.addEventListener('deviceorientation', (e: DeviceOrientationEvent) => {
+      const factor = 1;
+      this.player.xSpeed += e.beta * factor;
+      this.player.ySpeed += e.gamma * factor;
+    });
+  }
+
+  private initKeyControl() {
+    window.addEventListener('keydown', e => {
       const key = e.keyCode ? e.keyCode : e.which;
       const amount = 2;
       switch (key) {
@@ -29,15 +42,13 @@ export class AppComponent implements OnInit {
           this.player.ySpeed -= amount;
           break;
         case 39: // right key
-          this.player.xSpeed  += amount;
+          this.player.xSpeed += amount;
           break;
         case 40: // down key
           this.player.ySpeed += amount;
           break;
-
       }
-    };
-
+    });
   }
 
   gameLoop() {
