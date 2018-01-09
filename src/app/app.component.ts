@@ -12,9 +12,36 @@ export class AppComponent implements OnInit {
   wholeLeft: number;
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.wholeTop = 20;
-    }, 1000);
+    this.playerLeft = 50;
+    this.playerTop = 50;
+    this.randomlyPlaceWhole();
+
+    window.onkeydown = e => {
+      const key = e.keyCode ? e.keyCode : e.which;
+      const amount = 20;
+      console.log(key);
+      switch (key) {
+        case 37: // left key
+          this.playerLeft -= amount;
+          break;
+        case 38: // up key
+          this.playerTop -= amount;
+          break;
+        case 39: // right key
+          this.playerLeft += amount;
+          break;
+        case 40: // down key
+          this.playerTop += amount;
+          break;
+
+      }
+    };
+
+  }
+
+  randomlyPlaceWhole() {
+    this.wholeTop = Math.random() * window.innerHeight;
+    this.wholeLeft = Math.random() * window.innerWidth;
   }
 
 }
