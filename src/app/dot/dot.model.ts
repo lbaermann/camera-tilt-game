@@ -37,7 +37,12 @@ export class DotModel {
   }
 
   touches(other: DotModel): boolean {
-    return true;
+    // Touches if distance between centers is smaller than both radii added
+    const dx = other.centerX - this.centerX;
+    const dy = other.centerY - this.centerY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const radiiSum = this.radius + other.radius;
+    return distance < radiiSum;
   }
 
 }

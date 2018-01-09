@@ -54,6 +54,10 @@ export class AppComponent implements OnInit {
 
   gameLoop() {
     this.player.advanceOneStep();
+
+    if (this.player.touches(this.whole)) {
+      console.log('Touch!');
+    }
   }
 
   randomlyPlaceWhole() {
