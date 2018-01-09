@@ -1,6 +1,7 @@
 <div class="background">
 
-  <span style="color: white">Friction: {{currentFriction}}</span>
+  <span>Friction: {{currentFriction | number:'1.1-2' }}</span>
+  <span class="float-right">Score: {{score}}</span>
 
   <app-dot styleName='whole' [model]="whole"></app-dot>
   <app-dot styleName='player' [model]="player"></app-dot>

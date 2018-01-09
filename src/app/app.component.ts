@@ -10,15 +10,15 @@ export class AppComponent implements OnInit {
 
   player = new DotModel();
   whole = new DotModel();
+  score = 0;
 
   get currentFriction() {
     return DotModel.friction;
   }
 
   ngOnInit(): void {
-    this.centerPlayer();
     this.whole.radius = 20;
-    this.randomlyPlaceWhole();
+    this.restartGame();
 
     setInterval(() => this.gameLoop(), 10);
 
@@ -26,9 +26,18 @@ export class AppComponent implements OnInit {
     this.initTiltControl();
   }
 
+  private restartGame() {
+    this.centerPlayer();
+    this.randomlyPlaceWhole();
+    this.score = 0;
+    DotModel.friction = 0.95;
+  }
+
   private centerPlayer() {
     this.player.centerX = window.innerWidth / 2;
     this.player.centerY = window.innerHeight / 2;
+    this.player.xSpeed = 0;
+    this.player.ySpeed = 0;
   }
 
   private initTiltControl() {
@@ -64,9 +73,17 @@ export class AppComponent implements OnInit {
     this.player.advanceOneStep();
 
     if (this.player.touches(this.whole)) {
+      this.score++;
       this.randomlyPlaceWhole();
       this.centerPlayer();
       DotModel.friction = 0.8 + Math.random() * 0.19; // From 0.8 to 0.99 is ok
+    }
+
+    if (this.player.centerX < 0
+      || this.player.centerX > window.innerWidth
+      || this.player.centerY < 0
+      || this.player.centerY > window.innerHeight) {
+      this.restartGame();
     }
   }
 
