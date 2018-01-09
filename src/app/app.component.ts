@@ -12,8 +12,9 @@ export class AppComponent implements OnInit {
   whole = new DotModel();
 
   ngOnInit(): void {
-    this.player.x = 50;
-    this.player.y = 50;
+    this.player.centerX = window.innerWidth / 2;
+    this.player.centerY = window.innerHeight / 2;
+    this.whole.radius = 20;
     this.randomlyPlaceWhole();
 
     setInterval(() => this.gameLoop(), 10);

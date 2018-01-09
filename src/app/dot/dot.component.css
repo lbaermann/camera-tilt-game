@@ -1,6 +1,6 @@
 .dot {
   border-radius: 100%;
-  border: 10px solid;
+  border: solid;
   position: absolute;
 }
 
@@ -9,5 +9,5 @@
 }
 
 .whole {
-  border: 20px lightgray solid;
+  border-color: lightgray;
 }
