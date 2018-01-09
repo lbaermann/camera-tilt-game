@@ -33,9 +33,9 @@ export class AppComponent implements OnInit {
 
   private initTiltControl() {
     window.addEventListener('deviceorientation', (e: DeviceOrientationEvent) => {
-      const factor = 1;
-      this.player.xSpeed += e.beta * factor;
-      this.player.ySpeed += e.gamma * factor;
+      const factor = 0.01;
+      this.player.xSpeed += e.gamma * factor;
+      this.player.ySpeed += e.beta * factor;
     });
   }
 
