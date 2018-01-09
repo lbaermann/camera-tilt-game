@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {DotModel} from './dot/dot.model';
 
+const GAME_OVER_STRING = 'GAME OVER';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,6 +13,8 @@ export class AppComponent implements OnInit {
   player = new DotModel();
   whole = new DotModel();
   score = 0;
+  paused = false;
+  centerText: string;
 
   get currentFriction() {
     return DotModel.friction;
@@ -29,6 +33,7 @@ export class AppComponent implements OnInit {
   private restartGame() {
     this.centerPlayer();
     this.randomlyPlaceWhole();
+    this.paused = false;
     this.score = 0;
     DotModel.friction = 0.95;
   }
@@ -40,8 +45,26 @@ export class AppComponent implements OnInit {
     this.player.ySpeed = 0;
   }
 
+  private randomlyPlaceWhole() {
+    this.whole.x = Math.random() * window.innerWidth;
+    this.whole.y = Math.random() * window.innerHeight;
+  }
+
+  private gameOver() {
+    this.paused = true;
+    this.centerText = GAME_OVER_STRING;
+  }
+
+  centerTextClicked() {
+    this.restartGame();
+    this.centerText = null;
+  }
+
   private initTiltControl() {
     window.addEventListener('deviceorientation', (e: DeviceOrientationEvent) => {
+      if (this.paused) {
+        return;
+      }
       const factor = 0.01;
       this.player.xSpeed += e.gamma * factor;
       this.player.ySpeed += e.beta * factor;
@@ -50,6 +73,9 @@ export class AppComponent implements OnInit {
 
   private initKeyControl() {
     window.addEventListener('keydown', e => {
+      if (this.paused) {
+        return;
+      }
       const key = e.keyCode ? e.keyCode : e.which;
       const amount = 2;
       switch (key) {
@@ -69,7 +95,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  gameLoop() {
+  private gameLoop() {
     this.player.advanceOneStep();
 
     if (this.player.touches(this.whole)) {
@@ -83,13 +109,8 @@ export class AppComponent implements OnInit {
       || this.player.centerX > window.innerWidth
       || this.player.centerY < 0
       || this.player.centerY > window.innerHeight) {
-      this.restartGame();
+      this.gameOver();
     }
-  }
-
-  randomlyPlaceWhole() {
-    this.whole.x = Math.random() * window.innerWidth;
-    this.whole.y = Math.random() * window.innerHeight;
   }
 
 }
