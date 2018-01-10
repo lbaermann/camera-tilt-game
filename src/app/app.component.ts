@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {DotModel} from './dot/dot.model';
 
 const GAME_OVER_STRING = 'GAME OVER';
+const START_STRING = 'Press to start';
 
 @Component({
   selector: 'app-root',
@@ -21,8 +22,11 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.centerPlayer();
+    this.whole.centerX = -100;
     this.whole.radius = 20;
-    this.restartGame();
+    this.paused = true;
+    this.centerText = START_STRING;
 
     setInterval(() => this.gameLoop(), 10);
 
