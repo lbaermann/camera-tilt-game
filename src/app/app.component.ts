@@ -57,6 +57,9 @@ export class AppComponent implements OnInit {
   }
 
   centerTextClicked() {
+    if (!this.paused) {
+      return; // If game is not paused, the user doesn't see the center text and didn't want to click on it
+    }
     this.restartGame();
     this.centerText = null;
   }
