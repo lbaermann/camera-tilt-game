@@ -106,13 +106,11 @@ export class AppComponent implements OnInit {
   private gameLoop() {
     this.player.advanceOneStep();
 
-    if (this.player.touches(this.whole)) {
-      this.score++;
-      this.randomlyPlaceWhole();
-      this.centerPlayer();
-      DotModel.friction = 0.8 + Math.random() * 0.19; // From 0.8 to 0.99 is ok
-    }
+    this.detectLevelUp();
+    this.detectGameOver();
+  }
 
+  private detectGameOver() {
     if (this.player.centerX < 0
       || this.player.centerX > window.innerWidth
       || this.player.centerY < 0
@@ -121,4 +119,12 @@ export class AppComponent implements OnInit {
     }
   }
 
+  private detectLevelUp() {
+    if (this.player.touches(this.whole)) {
+      this.score++;
+      this.randomlyPlaceWhole();
+      this.centerPlayer();
+      DotModel.friction = 0.8 + Math.random() * 0.19; // From 0.8 to 0.99 is ok
+    }
+  }
 }
