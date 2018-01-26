@@ -29,15 +29,18 @@ export class ImageProcessorService {
 
   consumeImage(image: Image): BinaryImage {
     this.convertToBlackWhite(image.data);
-
     for (let i = 0; i < 1; i++) {
       this.morphologicOp(image, (top, right, bottom, left) => top || right || bottom || left);
       this.morphologicOp(image, (top, right, bottom, left) => top && right && bottom && left);
     }
 
+    console.log(`Before: ${image.width}x${image.height}`);
+    image = this.scaleDown(image, Math.floor(window.innerWidth / 3), Math.floor(window.innerHeight / 3));
+    console.log(`After: ${image.width}x${image.height}`);
+
     const binaryData: boolean[] = new Array(image.width * image.height);
-    for (let i = 0; i < image.width; i++) {
-      for (let j = 0; j < image.height; j++) {
+    for (let i = 0; i < image.height; i++) {
+      for (let j = 0; j < image.width; j++) {
         binaryData[i * image.width + j] = ImageProcessorService.getPixel(image, i, j) > 0;
       }
     }
@@ -49,14 +52,57 @@ export class ImageProcessorService {
     };
   }
 
+  private convertToBlackWhite(data: Buffer) {
+    const avg = this.calcMedian(data);
+    for (let i = 0; i < data.byteLength; i += 4) {
+      const localAvg = (data[i] + data[i + 1] + data[i + 2] + data[i + 3]) / 4;
+      const resultingPixel = localAvg >= avg ? 255 : 0;
+      this.setPixel(data, i, resultingPixel);
+    }
+  }
+
+  private scaleDown(image: Image, newWidth: number, newHeight: number): Image {
+    if (newWidth > image.width || newHeight > image.height) {
+      console.log('Not scaling down!');
+      return image;
+    }
+    console.log(`Should scale down to: ${newWidth}x${newHeight}`);
+    const newImg: Image = {
+      width: newWidth,
+      height: newHeight,
+      data: new Buffer(newWidth * newHeight * 4)
+    };
+    const oldPerNewPxHoriz = image.width / newWidth;
+    const oldPerNewPxVerti = image.height / newHeight;
+    const newPxSizeHoriz = Math.floor(oldPerNewPxHoriz);
+    const newPxSizeVerti = Math.floor(oldPerNewPxVerti);
+    console.log(`New px size ${newPxSizeHoriz}x${newPxSizeVerti}`);
+    for (let row = 0; row < newImg.height; row++) {
+      for (let col = 0; col < newImg.width; col++) {
+        const oldStartRow = Math.floor(row * oldPerNewPxVerti);
+        const oldStartCol = Math.floor(col * oldPerNewPxHoriz);
+        let sum = 0;
+        for (let i = 0; i < newPxSizeHoriz; i++) {
+          for (let j = 0; j < newPxSizeVerti; j++) {
+            sum += ImageProcessorService.getPixel(image, oldStartRow + j, oldStartCol + i);
+          }
+        }
+        const avg = sum / (newPxSizeHoriz * newPxSizeVerti);
+        const index = ImageProcessorService.getPixelIndex(newImg, row, col);
+        this.setPixel(newImg.data, index, avg >= 128 ? 255 : 0);
+      }
+    }
+    return newImg;
+  }
+
   private morphologicOp(image: Image, functor: (top: number, right: number, bottom: number, left: number) => number) {
     const imgCopy: Image = {
       data: new Buffer(image.data),
       width: image.width,
       height: image.height
     };
-    for (let row = 1; row < image.width - 1; row++) {
-      for (let col = 1; col < image.height - 1; col++) {
+    for (let row = 1; row < image.height - 1; row++) {
+      for (let col = 1; col < image.width - 1; col++) {
         const index = ImageProcessorService.getPixelIndex(image, row, col);
         const above = ImageProcessorService.getPixel(imgCopy, row - 1, col);
         const below = ImageProcessorService.getPixel(imgCopy, row + 1, col);
@@ -72,16 +118,7 @@ export class ImageProcessorService {
     }
   }
 
-  private convertToBlackWhite(data: Buffer) {
-    const avg = this.calcMedian(data);
-    for (let i = 0; i < data.byteLength; i += 4) {
-      const localAvg = (data[i] + data[i + 1] + data[i + 2] + data[i + 3]) / 4;
-      const resultingPixel = localAvg >= avg ? 255 : 0;
-      this.setPixel(data, i, resultingPixel);
-    }
-  }
-
-  /*private calcAvg(data: Buffer) {
+  /*private calcAvg(data: Buffer): number {
     let sum = 0;
     for (let i = 0; i < data.byteLength; i++) {
       sum += data[i];
