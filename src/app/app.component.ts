@@ -140,6 +140,10 @@ export class AppComponent implements OnInit {
       case HitDirection.HIT_HORIZONTAL:
         this.player.ySpeed *= -1;
         break;
+      case HitDirection.HIT_DIAGONAL:
+        this.player.xSpeed *= -1;
+        this.player.ySpeed *= -1;
+        break;
     }
 
     this.detectLevelUp();

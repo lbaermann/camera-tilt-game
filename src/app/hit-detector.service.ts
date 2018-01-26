@@ -5,7 +5,8 @@ import {DotModel} from './dot/dot.model';
 export enum HitDirection {
   NO_HIT,
   HIT_VERTICAL,
-  HIT_HORIZONTAL
+  HIT_HORIZONTAL,
+  HIT_DIAGONAL
 }
 
 @Injectable()
@@ -37,17 +38,28 @@ export class HitDetectorService {
     }
     const x = dot.centerX;
     const y = dot.centerY;
+    const r = dot.radius;
+    const topY = y - r;
+    const bottomY = y + r;
+    const leftX = x - r;
+    const rightX = x + r;
 
-    if (this.isBlocked(x, y)) {
-      if (this.isBlocked(x + this.screenPxPerImgPxHoriz, y)
-        || this.isBlocked(x - this.screenPxPerImgPxHoriz, y)) {
-        return HitDirection.HIT_HORIZONTAL;
-      }
-      if (this.isBlocked(x, y + this.screenPxPerImgPxVerti)
-        || this.isBlocked(x, y - this.screenPxPerImgPxVerti)) {
-        return HitDirection.HIT_VERTICAL;
-      }
+    const blocked = (sx, sy) => this.isBlocked(sx, sy) ? 1 : 0;
+    if (blocked(leftX, topY)
+      + blocked(leftX, bottomY)
+      + blocked(rightX, bottomY)
+      + blocked(rightX, topY) === 1) {
+      return HitDirection.HIT_DIAGONAL;
     }
+    if (blocked(x, topY)
+      || blocked(x, bottomY)) {
+      return HitDirection.HIT_VERTICAL;
+    }
+    if (blocked(leftX, y)
+      || blocked(rightX, y)) {
+      return HitDirection.HIT_HORIZONTAL;
+    }
+
 
     return HitDirection.NO_HIT;
   }
