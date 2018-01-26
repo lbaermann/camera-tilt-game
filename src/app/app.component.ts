@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {DotModel} from './dot/dot.model';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {BinaryImage, Image, ImageProcessorService} from './image-processor.service';
-import {HitDetectorService} from './hit-detector.service';
+import {HitDetectorService, HitDirection} from './hit-detector.service';
 
 const GAME_OVER_STRING = 'GAME OVER';
 const START_STRING = 'Press to start';
@@ -132,6 +132,15 @@ export class AppComponent implements OnInit {
 
   private gameLoop() {
     this.player.advanceOneStep();
+
+    switch (this.hitDetector.hitsWall(this.player)) {
+      case HitDirection.HIT_VERTICAL:
+        this.player.xSpeed *= -1;
+        break;
+      case HitDirection.HIT_HORIZONTAL:
+        this.player.ySpeed *= -1;
+        break;
+    }
 
     this.detectLevelUp();
     this.detectGameOver();
