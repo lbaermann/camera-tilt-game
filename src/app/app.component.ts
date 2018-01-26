@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DotModel} from './dot/dot.model';
+import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 const GAME_OVER_STRING = 'GAME OVER';
 const START_STRING = 'Press to start';
@@ -16,6 +17,10 @@ export class AppComponent implements OnInit {
   score = 0;
   paused = false;
   centerText: string;
+  image: string | SafeUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+
+  constructor(private sanitizer: DomSanitizer) {
+  }
 
   get currentFriction() {
     return DotModel.friction;
@@ -66,6 +71,39 @@ export class AppComponent implements OnInit {
     }
     this.restartGame();
     this.centerText = null;
+  }
+
+  cameraChanged(files: FileList) {
+    const file = files[0];
+    const blob = new Blob([file]);
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(blob);
+    reader.onload = ev => {
+      const original = new Uint8Array(reader.result);
+
+      const jpeg = require('jpeg-js');
+      const imageData = jpeg.decode(original);
+      const data: Buffer = imageData.data;
+
+      let sum = 0;
+      for (let i = 0; i < data.byteLength; i++) {
+        sum += data[i];
+      }
+      const avg = sum / data.byteLength;
+      console.log(avg);
+
+      for (let i = 0; i < data.byteLength; i += 4) {
+        const localAvg = (data[i] + data[i + 1] + data[i + 2] + data[i + 3]) / 4;
+        const resultingPixel = localAvg >= avg ? 255 : 0;
+        for (let j = 0; j < 4; j++) {
+          data[i + j] = resultingPixel;
+        }
+      }
+
+      const result = jpeg.encode(imageData).data;
+      const resultBlob = new Blob([result], {type: 'image/jpeg'});
+      this.image = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(resultBlob));
+    };
   }
 
   private initTiltControl() {

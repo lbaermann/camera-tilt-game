@@ -1,5 +1,9 @@
 <div class="background">
-  <input class="invisible" #cameraInput type="file" accept="image/*" title="Test" capture>
+  <input class="invisible position-absolute"
+         #cameraInput type="file" accept="image/jpeg" title="Test"
+         (change)="cameraChanged($event.target.files)" capture>
+
+  <img class="position-absolute full-screen" [src]="image">
 
   <app-dot styleName='whole' [model]="whole"></app-dot>
   <app-dot styleName='player' [model]="player"></app-dot>
