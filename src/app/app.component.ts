@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {DotModel} from './dot/dot.model';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {Image, ImageProcessorService} from './image-processor.service';
 
 const GAME_OVER_STRING = 'GAME OVER';
 const START_STRING = 'Press to start';
@@ -19,7 +20,8 @@ export class AppComponent implements OnInit {
   centerText: string;
   image: string | SafeUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 
-  constructor(private sanitizer: DomSanitizer) {
+  constructor(private sanitizer: DomSanitizer,
+              private imageProcessor: ImageProcessorService) {
   }
 
   get currentFriction() {
@@ -82,26 +84,10 @@ export class AppComponent implements OnInit {
       const original = new Uint8Array(reader.result);
 
       const jpeg = require('jpeg-js');
-      const imageData = jpeg.decode(original);
-      const data: Buffer = imageData.data;
-
-      let sum = 0;
-      for (let i = 0; i < data.byteLength; i++) {
-        sum += data[i];
-      }
-      const avg = sum / data.byteLength;
-      console.log(avg);
-
-      for (let i = 0; i < data.byteLength; i += 4) {
-        const localAvg = (data[i] + data[i + 1] + data[i + 2] + data[i + 3]) / 4;
-        const resultingPixel = localAvg >= avg ? 255 : 0;
-        for (let j = 0; j < 4; j++) {
-          data[i + j] = resultingPixel;
-        }
-      }
-
-      const result = jpeg.encode(imageData).data;
-      const resultBlob = new Blob([result], {type: 'image/jpeg'});
+      const image: Image = jpeg.decode(original);
+      const resultImage = this.imageProcessor.consumeImage(image);
+      const resultData = jpeg.encode(resultImage, 100).data;
+      const resultBlob = new Blob([resultData], {type: 'image/jpeg'});
       this.image = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(resultBlob));
     };
   }

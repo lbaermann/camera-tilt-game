@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { DotComponent } from './dot/dot.component';
+import {ImageProcessorService} from './image-processor.service';
 
 
 @NgModule({
@@ -14,7 +15,9 @@ import { DotComponent } from './dot/dot.component';
   imports: [
     BrowserModule
   ],
-  providers: [],
+  providers: [
+    ImageProcessorService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
