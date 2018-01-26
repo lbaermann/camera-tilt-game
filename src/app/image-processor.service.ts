@@ -19,6 +19,14 @@ export class ImageProcessorService {
   constructor() {
   }
 
+  static getPixel(image: Image, row: number, col: number): number {
+    return image.data[ImageProcessorService.getPixelIndex(image, row, col)];
+  }
+
+  static getPixelIndex(image: Image, row: number, col: number): number {
+    return (row * image.width + col) * 4;
+  }
+
   consumeImage(image: Image): BinaryImage {
     this.convertToBlackWhite(image.data);
 
@@ -30,7 +38,7 @@ export class ImageProcessorService {
     const binaryData: boolean[] = new Array(image.width * image.height);
     for (let i = 0; i < image.width; i++) {
       for (let j = 0; j < image.height; j++) {
-        binaryData[i * image.width + j] = this.getPixel(image, i, j) > 0;
+        binaryData[i * image.width + j] = ImageProcessorService.getPixel(image, i, j) > 0;
       }
     }
     return {
@@ -49,11 +57,11 @@ export class ImageProcessorService {
     };
     for (let row = 1; row < image.width - 1; row++) {
       for (let col = 1; col < image.height - 1; col++) {
-        const index = this.getPixelIndex(image, row, col);
-        const above = this.getPixel(imgCopy, row - 1, col);
-        const below = this.getPixel(imgCopy, row + 1, col);
-        const left = this.getPixel(imgCopy, row, col - 1);
-        const right = this.getPixel(imgCopy, row, col + 1);
+        const index = ImageProcessorService.getPixelIndex(image, row, col);
+        const above = ImageProcessorService.getPixel(imgCopy, row - 1, col);
+        const below = ImageProcessorService.getPixel(imgCopy, row + 1, col);
+        const left = ImageProcessorService.getPixel(imgCopy, row, col - 1);
+        const right = ImageProcessorService.getPixel(imgCopy, row, col + 1);
 
         if (above || below || right || left) {
           this.setPixel(image.data, index, 255);
@@ -62,14 +70,6 @@ export class ImageProcessorService {
         }
       }
     }
-  }
-
-  private getPixel(image: Image, row: number, col: number): number {
-    return image.data[this.getPixelIndex(image, row, col)];
-  }
-
-  private getPixelIndex(image: Image, row: number, col: number): number {
-    return (row * image.width + col) * 4;
   }
 
   private convertToBlackWhite(data: Buffer) {

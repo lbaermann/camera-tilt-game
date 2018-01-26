@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {DotModel} from './dot/dot.model';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {BinaryImage, Image, ImageProcessorService} from './image-processor.service';
+import {HitDetectorService} from './hit-detector.service';
 
 const GAME_OVER_STRING = 'GAME OVER';
 const START_STRING = 'Press to start';
@@ -19,10 +20,10 @@ export class AppComponent implements OnInit {
   paused = false;
   centerText: string;
   image: string | SafeUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-  private imageMask: BinaryImage;
 
   constructor(private sanitizer: DomSanitizer,
-              private imageProcessor: ImageProcessorService) {
+              private imageProcessor: ImageProcessorService,
+              private hitDetector: HitDetectorService) {
   }
 
   get currentFriction() {
@@ -86,10 +87,11 @@ export class AppComponent implements OnInit {
 
       const jpeg = require('jpeg-js');
       const image: Image = jpeg.decode(original);
-      this.imageMask = this.imageProcessor.consumeImage(image);
-      const resultData = jpeg.encode(this.imageMask, 100).data;
+      const resultImage = this.imageProcessor.consumeImage(image);
+      const resultData = jpeg.encode(resultImage, 100).data;
       const resultBlob = new Blob([resultData], {type: 'image/jpeg'});
       this.image = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(resultBlob));
+      this.hitDetector.imageMask = resultImage;
     };
   }
 

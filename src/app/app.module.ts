@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { DotComponent } from './dot/dot.component';
 import {ImageProcessorService} from './image-processor.service';
+import {HitDetectorService} from './hit-detector.service';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import {ImageProcessorService} from './image-processor.service';
     BrowserModule
   ],
   providers: [
-    ImageProcessorService
+    ImageProcessorService,
+    HitDetectorService
   ],
   bootstrap: [AppComponent]
 })
