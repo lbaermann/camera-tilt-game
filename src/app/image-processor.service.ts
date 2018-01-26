@@ -6,23 +6,39 @@ export interface Image {
   height: number;
 }
 
+export interface BinaryImage {
+  data: Buffer;
+  binaryData: boolean[];
+  width: number;
+  height: number;
+}
+
 @Injectable()
 export class ImageProcessorService {
 
   constructor() {
   }
 
-  consumeImage(image: Image): Image {
-    const data: Buffer = image.data;
-
-    this.convertToBlackWhite(data);
+  consumeImage(image: Image): BinaryImage {
+    this.convertToBlackWhite(image.data);
 
     for (let i = 0; i < 1; i++) {
       this.morphologicOp(image, (top, right, bottom, left) => top || right || bottom || left);
       this.morphologicOp(image, (top, right, bottom, left) => top && right && bottom && left);
     }
 
-    return image;
+    const binaryData: boolean[] = new Array(image.width * image.height);
+    for (let i = 0; i < image.width; i++) {
+      for (let j = 0; j < image.height; j++) {
+        binaryData[i * image.width + j] = this.getPixel(image, i, j) > 0;
+      }
+    }
+    return {
+      data: image.data,
+      binaryData: binaryData,
+      width: image.width,
+      height: image.height
+    };
   }
 
   private morphologicOp(image: Image, functor: (top: number, right: number, bottom: number, left: number) => number) {
