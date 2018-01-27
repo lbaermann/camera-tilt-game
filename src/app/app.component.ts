@@ -31,7 +31,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.centerPlayer();
+    this.randomlyPlacePlayer();
     this.whole.centerX = -100;
     this.whole.radius = 20;
     this.paused = true;
@@ -44,16 +44,17 @@ export class AppComponent implements OnInit {
   }
 
   private restartGame() {
-    this.centerPlayer();
+    this.randomlyPlacePlayer();
     this.randomlyPlaceWhole();
     this.paused = false;
     this.score = 0;
     DotModel.friction = 0.95;
   }
 
-  private centerPlayer() {
-    this.player.centerX = window.innerWidth / 2;
-    this.player.centerY = window.innerHeight / 2;
+  private randomlyPlacePlayer() {
+    const freePosition = this.hitDetector.findRandomFreePosition();
+    this.player.centerX = freePosition.screenX;
+    this.player.centerY = freePosition.screenY;
     this.player.xSpeed = 0;
     this.player.ySpeed = 0;
   }
@@ -92,6 +93,7 @@ export class AppComponent implements OnInit {
       const resultBlob = new Blob([resultData], {type: 'image/jpeg'});
       this.image = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(resultBlob));
       this.hitDetector.imageMask = resultImage;
+      this.randomlyPlacePlayer();
     };
   }
 
@@ -163,7 +165,7 @@ export class AppComponent implements OnInit {
     if (this.player.touches(this.whole)) {
       this.score++;
       this.randomlyPlaceWhole();
-      this.centerPlayer();
+      this.randomlyPlacePlayer();
       DotModel.friction = 0.8 + Math.random() * 0.19; // From 0.8 to 0.99 is ok
     }
   }

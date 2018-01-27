@@ -26,6 +26,9 @@ export class HitDetectorService {
   }
 
   isBlocked(screenX: number, screenY: number): boolean {
+    if (this.imageMask == null) {
+      return false;
+    }
     const imgX = Math.floor(screenX / this.screenPxPerImgPxHoriz);
     const imgY = Math.floor(screenY / this.screenPxPerImgPxVerti);
 
@@ -63,5 +66,29 @@ export class HitDetectorService {
 
 
     return HitDirection.NO_HIT;
+  }
+
+  findRandomFreePosition(): { screenX: number, screenY: number } {
+    if (this.imageMask == null) {
+      return {
+        screenX: window.innerWidth / 2,
+        screenY: window.innerHeight / 2
+      };
+    }
+    const indices: number[] = [];
+    const data = this.imageMask.binaryData;
+    for (let i = 0; i < data.length; i++) {
+      if (data[i]) {
+        indices.push(i);
+      }
+    }
+    const random = Math.floor(Math.random() * indices.length - 1);
+    const indexToUse = indices[random];
+    const row = Math.floor(indexToUse / this.imageMask.width);
+    const col = indexToUse % this.imageMask.width;
+    return {
+      screenX: this.screenPxPerImgPxHoriz * col + this.screenPxPerImgPxHoriz / 2,
+      screenY: this.screenPxPerImgPxVerti * row + this.screenPxPerImgPxVerti / 2
+    };
   }
 }
