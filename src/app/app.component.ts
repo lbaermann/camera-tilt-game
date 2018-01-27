@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DotModel} from './dot/dot.model';
+import {DotModel, Position} from './dot/dot.model';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {BinaryImage, Image, ImageProcessorService} from './image-processor.service';
 import {HitDetectorService, HitDirection} from './hit-detector.service';
@@ -133,23 +133,31 @@ export class AppComponent implements OnInit {
   }
 
   private gameLoop() {
+    const posBefore = this.player.centerPos;
     this.player.advanceOneStep();
-
-    switch (this.hitDetector.hitsWall(this.player)) {
-      case HitDirection.HIT_VERTICAL:
-        this.player.xSpeed *= -1;
-        break;
-      case HitDirection.HIT_HORIZONTAL:
-        this.player.ySpeed *= -1;
-        break;
-      case HitDirection.HIT_DIAGONAL:
-        this.player.xSpeed *= -1;
-        this.player.ySpeed *= -1;
-        break;
-    }
-
+    this.detectHits(posBefore);
     this.detectLevelUp();
     this.detectGameOver();
+  }
+
+  private detectHits(posBefore: Position) {
+    const reflectionFactor = -0.75;
+    const hitDirection = this.hitDetector.hitsWall(this.player);
+    if (hitDirection !== HitDirection.NO_HIT) {
+      this.player.centerPos = posBefore;
+    }
+    switch (hitDirection) {
+      case HitDirection.HIT_VERTICAL:
+        this.player.ySpeed *= reflectionFactor;
+        break;
+      case HitDirection.HIT_HORIZONTAL:
+        this.player.xSpeed *= reflectionFactor;
+        break;
+      case HitDirection.HIT_DIAGONAL:
+        this.player.xSpeed *= reflectionFactor;
+        this.player.ySpeed *= reflectionFactor;
+        break;
+    }
   }
 
   private detectGameOver() {

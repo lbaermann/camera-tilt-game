@@ -1,3 +1,8 @@
+export interface Position {
+  x: number;
+  y: number;
+}
+
 export class DotModel {
 
   static friction = 0.95;
@@ -25,6 +30,17 @@ export class DotModel {
 
   set centerY(value: number) {
     this.y = value - this.radius;
+  }
+
+  get centerPos(): Position {
+    return {
+      x: this.centerX,
+      y: this.centerY
+    };
+  }
+  set centerPos(value: Position) {
+    this.centerX = value.x;
+    this.centerY = value.y;
   }
 
   advanceOneStep() {
