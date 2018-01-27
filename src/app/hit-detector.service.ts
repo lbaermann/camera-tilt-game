@@ -29,7 +29,8 @@ export class HitDetectorService {
     const imgX = Math.floor(screenX / this.screenPxPerImgPxHoriz);
     const imgY = Math.floor(screenY / this.screenPxPerImgPxVerti);
 
-    return ImageProcessorService.getPixel(this.imageMask, imgY, imgX) === 0;
+    const img = this.imageMask;
+    return !img.binaryData[imgY * img.width + imgX];
   }
 
   hitsWall(dot: DotModel): HitDirection {

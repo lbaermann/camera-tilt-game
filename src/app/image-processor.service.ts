@@ -35,21 +35,27 @@ export class ImageProcessorService {
     }
 
     console.log(`Before: ${image.width}x${image.height}`);
-    image = this.scaleDown(image, Math.floor(window.innerWidth / 3), Math.floor(window.innerHeight / 3));
+    const scale = 8;
+    image = this.scaleDown(image, Math.floor(window.innerWidth / scale), Math.floor(window.innerHeight / scale));
     console.log(`After: ${image.width}x${image.height}`);
 
-    const binaryData: boolean[] = new Array(image.width * image.height);
-    for (let i = 0; i < image.height; i++) {
-      for (let j = 0; j < image.width; j++) {
-        binaryData[i * image.width + j] = ImageProcessorService.getPixel(image, i, j) > 0;
-      }
-    }
+    const binaryData = this.extractBinaryImgData(image);
     return {
       data: image.data,
       binaryData: binaryData,
       width: image.width,
       height: image.height
     };
+  }
+
+  private extractBinaryImgData(image: Image) {
+    const binaryData: boolean[] = new Array(image.width * image.height);
+    for (let i = 0; i < image.height; i++) {
+      for (let j = 0; j < image.width; j++) {
+        binaryData[i * image.width + j] = ImageProcessorService.getPixel(image, i, j) > 0;
+      }
+    }
+    return binaryData;
   }
 
   private convertToBlackWhite(data: Buffer) {
