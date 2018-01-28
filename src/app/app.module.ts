@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { DotComponent } from './dot/dot.component';
 import {ImageProcessorService} from './image-processor.service';
 import {HitDetectorService} from './hit-detector.service';
+import {TiltControlService} from './tilt-control.service';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import {HitDetectorService} from './hit-detector.service';
   ],
   providers: [
     ImageProcessorService,
-    HitDetectorService
+    HitDetectorService,
+    TiltControlService
   ],
   bootstrap: [AppComponent]
 })

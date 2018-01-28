@@ -4,6 +4,7 @@ import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {BinaryImage, Image, ImageProcessorService} from './image-processor.service';
 import {HitDetectorService, HitDirection} from './hit-detector.service';
 import jpeg from 'jpeg-js';
+import {TiltControlService} from './tilt-control.service';
 
 const GAME_OVER_STRING = 'GAME OVER';
 const START_STRING = 'Press to start';
@@ -24,7 +25,8 @@ export class AppComponent implements OnInit {
 
   constructor(private sanitizer: DomSanitizer,
               private imageProcessor: ImageProcessorService,
-              private hitDetector: HitDetectorService) {
+              private hitDetector: HitDetectorService,
+              private tiltControl: TiltControlService) {
   }
 
   get currentFriction() {
@@ -38,10 +40,10 @@ export class AppComponent implements OnInit {
     this.paused = true;
     this.centerText = START_STRING;
 
-    setInterval(() => this.gameLoop(), 10);
+    requestAnimationFrame(time => this.gameLoop());
 
     this.initKeyControl();
-    this.initTiltControl();
+    this.tiltControl.init();
   }
 
   private restartGame() {
@@ -98,17 +100,6 @@ export class AppComponent implements OnInit {
     };
   }
 
-  private initTiltControl() {
-    window.addEventListener('deviceorientation', (e: DeviceOrientationEvent) => {
-      if (this.paused) {
-        return;
-      }
-      const factor = 0.01;
-      this.player.xSpeed += e.gamma * factor;
-      this.player.ySpeed += e.beta * factor;
-    });
-  }
-
   private initKeyControl() {
     window.addEventListener('keydown', e => {
       if (this.paused) {
@@ -134,11 +125,24 @@ export class AppComponent implements OnInit {
   }
 
   private gameLoop() {
+    this.handleTiltControlData();
+
     const posBefore = this.player.centerPos;
     this.player.advanceOneStep();
+
     this.detectHits(posBefore);
     this.detectLevelUp();
     this.detectGameOver();
+
+    requestAnimationFrame(time => this.gameLoop());
+  }
+
+  private handleTiltControlData() {
+    if (this.paused) {
+      return;
+    }
+    this.player.xSpeed += this.tiltControl.horizontalAcceleration;
+    this.player.ySpeed += this.tiltControl.verticalAcceleration;
   }
 
   private detectHits(posBefore: Position) {
