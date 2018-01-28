@@ -7,7 +7,6 @@ export interface Image {
 }
 
 export interface BinaryImage {
-  data: Uint8Array;
   binaryData: boolean[];
   width: number;
   height: number;
@@ -27,35 +26,41 @@ export class ImageProcessorService {
     return (row * image.width + col) * 4;
   }
 
-  consumeImage(image: Image): BinaryImage {
+  consumeImage(image: Image): { real: Image, mask: BinaryImage } {
     this.convertToBlackWhite(image.data);
     for (let i = 0; i < 1; i++) {
       this.morphologicOp(image, (top, right, bottom, left) => top || right || bottom || left);
       this.morphologicOp(image, (top, right, bottom, left) => top && right && bottom && left);
     }
 
-    console.log(`Before: ${image.width}x${image.height}`);
-    const scale = 8;
-    image = this.scaleDown(image, Math.floor(window.innerWidth / scale), Math.floor(window.innerHeight / scale));
-    console.log(`After: ${image.width}x${image.height}`);
+    const downscaled1 = image; // this.scaleDownRelativeToWindow(image, 2);
+    const downscaled2 = this.scaleDownRelativeToWindow(downscaled1, 8);
+    const binary = this.extractBinaryImage(downscaled2);
 
-    const binaryData = this.extractBinaryImgData(image);
     return {
-      data: image.data,
-      binaryData: binaryData,
-      width: image.width,
-      height: image.height
+      real: downscaled1,
+      mask: binary
     };
   }
 
-  private extractBinaryImgData(image: Image) {
+  private scaleDownRelativeToWindow(image: Image, scale: number) {
+    return this.scaleDown(image,
+      Math.floor(window.innerWidth / scale),
+      Math.floor(window.innerHeight / scale));
+  }
+
+  private extractBinaryImage(image: Image): BinaryImage {
     const binaryData: boolean[] = new Array(image.width * image.height);
     for (let i = 0; i < image.height; i++) {
       for (let j = 0; j < image.width; j++) {
         binaryData[i * image.width + j] = ImageProcessorService.getPixel(image, i, j) > 0;
       }
     }
-    return binaryData;
+    return {
+      binaryData: binaryData,
+      width: image.width,
+      height: image.height
+    };
   }
 
   private convertToBlackWhite(data: Uint8Array) {

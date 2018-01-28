@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BinaryImage, ImageProcessorService} from './image-processor.service';
+import {BinaryImage} from './image-processor.service';
 import {DotModel} from './dot/dot.model';
 
 export enum HitDirection {

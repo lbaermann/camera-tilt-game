@@ -88,11 +88,12 @@ export class AppComponent implements OnInit {
       const original = new Uint8Array(reader.result);
 
       const image: Image = jpeg.decode(original, true);
-      const resultImage = this.imageProcessor.consumeImage(image);
+      const result = this.imageProcessor.consumeImage(image);
+      const resultImage = result.real;
       const resultData = jpeg.encode(resultImage, 100).data;
       const resultBlob = new Blob([resultData], {type: 'image/jpeg'});
       this.image = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(resultBlob));
-      this.hitDetector.imageMask = resultImage;
+      this.hitDetector.imageMask = result.mask;
       this.randomlyPlacePlayer();
     };
   }
