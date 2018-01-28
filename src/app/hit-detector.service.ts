@@ -74,12 +74,12 @@ export class HitDetectorService {
   }
 
   findRandomFreePosition(radius: number): { screenX: number, screenY: number } {
-    const center = {
-      screenX: window.innerWidth / 2,
-      screenY: window.innerHeight / 2
+    const randomPos = {
+      screenX: window.innerWidth / 4 + Math.random() * window.innerWidth / 2,
+      screenY: window.innerHeight / 4 + Math.random() * window.innerHeight / 2
     };
     if (this.imageMask == null) {
-      return center;
+      return randomPos;
     }
     const radiusInImgPx = Math.floor(radius / Math.min(this.screenPxPerImgPxVerti, this.screenPxPerImgPxHoriz)) + 1;
     const indices: number[] = [];
@@ -102,7 +102,7 @@ export class HitDetectorService {
       }
     }
     if (indices.length === 0) {
-      return center;
+      return randomPos;
     }
     const random = Math.floor(Math.random() * indices.length - 1);
     const indexToUse = indices[random];
