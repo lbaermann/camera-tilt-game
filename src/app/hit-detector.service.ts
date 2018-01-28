@@ -68,27 +68,44 @@ export class HitDetectorService {
     return HitDirection.NO_HIT;
   }
 
-  findRandomFreePosition(): { screenX: number, screenY: number } {
+  findRandomFreePosition(radius: number): { screenX: number, screenY: number } {
+    const center = {
+      screenX: window.innerWidth / 2,
+      screenY: window.innerHeight / 2
+    };
     if (this.imageMask == null) {
-      return {
-        screenX: window.innerWidth / 2,
-        screenY: window.innerHeight / 2
-      };
+      return center;
     }
+    const radiusInImgPx = Math.floor(radius / Math.min(this.screenPxPerImgPxVerti, this.screenPxPerImgPxHoriz)) + 1;
     const indices: number[] = [];
     const data = this.imageMask.binaryData;
-    for (let i = 0; i < data.length; i++) {
-      if (data[i]) {
+    const width = this.imageMask.width;
+    for (let row = 0; row < this.imageMask.height; row++) {
+      outer: for (let col = 0; col < width; col++) {
+        const i = row * width + col;
+
+        for (let row2 = row - radiusInImgPx; row2 < row + radiusInImgPx; row2++) {
+          for (let col2 = col - radiusInImgPx; col2 < col + radiusInImgPx; col2++) {
+            const index = row2 * width + col2;
+            if (!data[index]) {
+              continue outer;
+            }
+          }
+        }
+
         indices.push(i);
       }
     }
+    if (indices.length === 0) {
+      return center;
+    }
     const random = Math.floor(Math.random() * indices.length - 1);
     const indexToUse = indices[random];
-    const row = Math.floor(indexToUse / this.imageMask.width);
-    const col = indexToUse % this.imageMask.width;
+    const rowUsed = Math.floor(indexToUse / width);
+    const colUsed = indexToUse % width;
     return {
-      screenX: this.screenPxPerImgPxHoriz * col + this.screenPxPerImgPxHoriz / 2,
-      screenY: this.screenPxPerImgPxVerti * row + this.screenPxPerImgPxVerti / 2
+      screenX: this.screenPxPerImgPxHoriz * colUsed + this.screenPxPerImgPxHoriz / 2,
+      screenY: this.screenPxPerImgPxVerti * rowUsed + this.screenPxPerImgPxVerti / 2
     };
   }
 }

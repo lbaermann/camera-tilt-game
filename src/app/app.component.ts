@@ -55,7 +55,7 @@ export class AppComponent implements OnInit {
   }
 
   private randomlyPlacePlayer() {
-    const freePosition = this.hitDetector.findRandomFreePosition();
+    const freePosition = this.hitDetector.findRandomFreePosition(this.player.radius);
     this.player.centerX = freePosition.screenX;
     this.player.centerY = freePosition.screenY;
     this.player.xSpeed = 0;
@@ -64,8 +64,9 @@ export class AppComponent implements OnInit {
 
   private randomlyPlaceWhole() {
     const radius = this.whole.radius;
-    this.whole.centerX = radius + Math.random() * (window.innerWidth - 2 * radius);
-    this.whole.centerY = radius + Math.random() * (window.innerHeight - 2 * radius);
+    const position = this.hitDetector.findRandomFreePosition(radius);
+    this.whole.centerX = position.screenX;
+    this.whole.centerY = position.screenY;
   }
 
   private gameOver() {
