@@ -149,17 +149,33 @@ export class AppComponent implements OnInit {
   private detectHits(posBefore: Position) {
     const reflectionFactor = -0.75;
     const hitDirection = this.hitDetector.hitsWall(this.player);
-    if (hitDirection !== HitDirection.NO_HIT) {
-      this.player.centerPos = posBefore;
-    }
     switch (hitDirection) {
-      case HitDirection.HIT_VERTICAL:
-        this.player.ySpeed *= reflectionFactor;
+      case HitDirection.HIT_DOWN:
+        if (this.player.ySpeed > 0) {
+          this.player.centerY = posBefore.y;
+          this.player.ySpeed *= reflectionFactor;
+        }
         break;
-      case HitDirection.HIT_HORIZONTAL:
-        this.player.xSpeed *= reflectionFactor;
+      case HitDirection.HIT_UP:
+        if (this.player.ySpeed < 0) {
+          this.player.centerY = posBefore.y;
+          this.player.ySpeed *= reflectionFactor;
+        }
+        break;
+      case HitDirection.HIT_LEFT:
+        if (this.player.xSpeed < 0) {
+          this.player.centerX = posBefore.x;
+          this.player.xSpeed *= reflectionFactor;
+        }
+        break;
+      case HitDirection.HIT_RIGHT:
+        if (this.player.xSpeed > 0) {
+          this.player.centerX = posBefore.x;
+          this.player.xSpeed *= reflectionFactor;
+        }
         break;
       case HitDirection.HIT_DIAGONAL:
+        this.player.centerPos = posBefore;
         this.player.xSpeed *= reflectionFactor;
         this.player.ySpeed *= reflectionFactor;
         break;

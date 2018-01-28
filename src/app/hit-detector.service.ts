@@ -4,8 +4,10 @@ import {DotModel} from './dot/dot.model';
 
 export enum HitDirection {
   NO_HIT,
-  HIT_VERTICAL,
-  HIT_HORIZONTAL,
+  HIT_UP,
+  HIT_DOWN,
+  HIT_LEFT,
+  HIT_RIGHT,
   HIT_DIAGONAL
 }
 
@@ -55,15 +57,18 @@ export class HitDetectorService {
       + blocked(rightX, topY) === 1) {
       return HitDirection.HIT_DIAGONAL;
     }
-    if (blocked(x, topY)
-      || blocked(x, bottomY)) {
-      return HitDirection.HIT_VERTICAL;
+    if (blocked(x, topY)) {
+      return HitDirection.HIT_UP;
     }
-    if (blocked(leftX, y)
-      || blocked(rightX, y)) {
-      return HitDirection.HIT_HORIZONTAL;
+    if (blocked(x, bottomY)) {
+      return HitDirection.HIT_DOWN;
     }
-
+    if (blocked(leftX, y)) {
+      return HitDirection.HIT_LEFT;
+    }
+    if (blocked(rightX, y)) {
+      return HitDirection.HIT_RIGHT;
+    }
 
     return HitDirection.NO_HIT;
   }
