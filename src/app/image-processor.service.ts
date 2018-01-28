@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 
 export interface Image {
-  data: Buffer;
+  data: Uint8Array;
   width: number;
   height: number;
 }
 
 export interface BinaryImage {
-  data: Buffer;
+  data: Uint8Array;
   binaryData: boolean[];
   width: number;
   height: number;
@@ -58,7 +58,7 @@ export class ImageProcessorService {
     return binaryData;
   }
 
-  private convertToBlackWhite(data: Buffer) {
+  private convertToBlackWhite(data: Uint8Array) {
     const avg = this.calcMedian(data);
     for (let i = 0; i < data.byteLength; i += 4) {
       const localAvg = (data[i] + data[i + 1] + data[i + 2] + data[i + 3]) / 4;
@@ -76,7 +76,7 @@ export class ImageProcessorService {
     const newImg: Image = {
       width: newWidth,
       height: newHeight,
-      data: new Buffer(newWidth * newHeight * 4)
+      data: new Uint8Array(newWidth * newHeight * 4)
     };
     const oldPerNewPxHoriz = image.width / newWidth;
     const oldPerNewPxVerti = image.height / newHeight;
@@ -103,7 +103,7 @@ export class ImageProcessorService {
 
   private morphologicOp(image: Image, functor: (top: number, right: number, bottom: number, left: number) => number) {
     const imgCopy: Image = {
-      data: new Buffer(image.data),
+      data: new Uint8Array(image.data),
       width: image.width,
       height: image.height
     };
@@ -132,13 +132,13 @@ export class ImageProcessorService {
     return sum / data.byteLength;
   }*/
 
-  private calcMedian(data: Buffer) {
-    const buffer = new Buffer(data);
+  private calcMedian(data: Uint8Array) {
+    const buffer = new Uint8Array(data);
     buffer.sort();
     return buffer[buffer.byteLength / 2];
   }
 
-  private setPixel(data: Buffer, i: number, resultingPixel: number) {
+  private setPixel(data: Uint8Array, i: number, resultingPixel: number) {
     for (let j = 0; j < 4; j++) {
       data[i + j] = resultingPixel;
     }

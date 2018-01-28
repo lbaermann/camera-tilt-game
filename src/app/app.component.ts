@@ -3,6 +3,7 @@ import {DotModel, Position} from './dot/dot.model';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {BinaryImage, Image, ImageProcessorService} from './image-processor.service';
 import {HitDetectorService, HitDirection} from './hit-detector.service';
+import jpeg from 'jpeg-js';
 
 const GAME_OVER_STRING = 'GAME OVER';
 const START_STRING = 'Press to start';
@@ -86,8 +87,7 @@ export class AppComponent implements OnInit {
     reader.onload = ev => {
       const original = new Uint8Array(reader.result);
 
-      const jpeg = require('jpeg-js');
-      const image: Image = jpeg.decode(original);
+      const image: Image = jpeg.decode(original, true);
       const resultImage = this.imageProcessor.consumeImage(image);
       const resultData = jpeg.encode(resultImage, 100).data;
       const resultBlob = new Blob([resultData], {type: 'image/jpeg'});
