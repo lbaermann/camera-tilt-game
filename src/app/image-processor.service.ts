@@ -64,7 +64,7 @@ export class ImageProcessorService {
   }
 
   private convertToBlackWhite(data: Uint8Array) {
-    const avg = this.calcHistogramMedian(data);
+    const avg = this.calcHistogramQuantil(data);
     console.log(`Histogramm median is ${avg}`);
     for (let i = 0; i < data.byteLength; i += 4) {
       const localAvg = (data[i] + data[i + 1] + data[i + 2] + data[i + 3]) / 4;
@@ -130,7 +130,7 @@ export class ImageProcessorService {
     }
   }
 
-  private calcHistogramMedian(data: Uint8Array): number {
+  private calcHistogramQuantil(data: Uint8Array): number {
     const histogramm: { [key: number]: number } = {};
     for (let i = 0; i < data.byteLength; i += 4) {
       const grayscale = (data[i] + data[i + 1] + data[i + 2]) / 3;
@@ -142,7 +142,8 @@ export class ImageProcessorService {
     }
     const keys = Object.keys(histogramm);
     keys.sort();
-    return parseInt(keys[Math.floor(keys.length / 2)], 10);
+    const quantilFactor = 0.25;
+    return parseInt(keys[Math.floor(keys.length * quantilFactor)], 10);
   }
 
   private setPixel(data: Uint8Array, i: number, resultingPixel: number) {
