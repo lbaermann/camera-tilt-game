@@ -8,6 +8,9 @@ import {TiltControlService} from './tilt-control.service';
 
 const GAME_OVER_STRING = 'GAME OVER';
 const START_STRING = 'Press to start';
+const WAIT_STRING = 'Please wait...';
+const WAIT_DECODING_STRING = 'Decoding image...';
+const WAIT_TRANSFORMING_STRING = 'Transforming image...';
 
 @Component({
   selector: 'app-root',
@@ -83,6 +86,9 @@ export class AppComponent implements OnInit {
   }
 
   cameraChanged(files: FileList) {
+    this.paused = true;
+    this.centerText = WAIT_STRING;
+
     const file = files[0];
     const blob = new Blob([file]);
     const reader = new FileReader();
@@ -90,14 +96,18 @@ export class AppComponent implements OnInit {
     reader.onload = ev => {
       const original = new Uint8Array(reader.result);
 
+      this.centerText = WAIT_DECODING_STRING;
       const image: Image = jpeg.decode(original, true);
+      this.centerText = WAIT_TRANSFORMING_STRING;
       const result = this.imageProcessor.consumeImage(image);
+
       const resultImage = result.real;
       const resultData = jpeg.encode(resultImage, 100).data;
       const resultBlob = new Blob([resultData], {type: 'image/jpeg'});
       this.image = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(resultBlob));
       this.hitDetector.imageMask = result.mask;
-      this.randomlyPlacePlayer();
+
+      this.restartGame();
     };
   }
 
