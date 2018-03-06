@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
   paused = false;
   centerText: string;
   image: string | SafeUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+  maskImg: string | SafeUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 
   constructor(private sanitizer: DomSanitizer,
               private imageProcessor: ImageProcessorService,
@@ -101,14 +102,18 @@ export class AppComponent implements OnInit {
       this.centerText = WAIT_TRANSFORMING_STRING;
       const result = this.imageProcessor.consumeImage(image);
 
-      const resultImage = result.real;
-      const resultData = jpeg.encode(resultImage, 100).data;
-      const resultBlob = new Blob([resultData], {type: 'image/jpeg'});
-      this.image = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(resultBlob));
+      this.image = this.createDataUrl(result.real);
+      this.maskImg = this.createDataUrl(result.maskImg);
       this.hitDetector.imageMask = result.mask;
 
       this.restartGame();
     };
+  }
+
+  private createDataUrl(resultImage: Image) {
+    const resultData = jpeg.encode(resultImage, 100).data;
+    const resultBlob = new Blob([resultData], {type: 'image/jpeg'});
+    return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(resultBlob));
   }
 
   private initKeyControl() {

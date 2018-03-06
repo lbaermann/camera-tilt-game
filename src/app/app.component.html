@@ -4,6 +4,7 @@
          (change)="cameraChanged($event.target.files)" capture>
 
   <img class="position-absolute full-screen" [src]="image">
+  <img class="position-absolute full-screen" style="opacity: 0.5" [src]="maskImg">
 
   <app-dot styleName='whole' [model]="whole"></app-dot>
   <app-dot styleName='player' [model]="player"></app-dot>

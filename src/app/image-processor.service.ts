@@ -12,6 +12,12 @@ export interface BinaryImage {
   height: number;
 }
 
+interface Color {
+  r: number;
+  g: number;
+  b: number;
+}
+
 @Injectable()
 export class ImageProcessorService {
 
@@ -26,22 +32,22 @@ export class ImageProcessorService {
     return (row * image.width + col) * 4;
   }
 
-  consumeImage(image: Image): { real: Image, mask: BinaryImage } {
+  consumeImage(image: Image): { real: Image, maskImg: Image, mask: BinaryImage } {
     this.convertToBlackWhite(image.data);
     for (let i = 0; i < 1; i++) {
       this.morphologicOp(image, (top, right, bottom, left) => top || right || bottom || left);
       this.morphologicOp(image, (top, right, bottom, left) => top && right && bottom && left);
     }
 
-    const downscaled1 = image; // this.scaleDownRelativeToWindow(image, 2);
-    const downscaled2 = this.scaleDownRelativeToWindow(downscaled1, 8);
+    const rotate = this.rotateImage(image);
+    const downscale = this.scaleDownRelativeToWindow(rotate, 5);
+    const binary = this.extractBinaryImage(downscale);
 
-    const rotate1 = this.rotateImage(downscaled1);
-    const rotate2 = this.rotateImage(downscaled2);
-    const binary = this.extractBinaryImage(rotate2);
+    this.replaceColor(downscale, 0, {r: 255, g: 0, b: 0});
 
     return {
-      real: rotate1,
+      real: rotate,
+      maskImg: downscale,
       mask: binary
     };
   }
@@ -53,7 +59,7 @@ export class ImageProcessorService {
   }
 
   private extractBinaryImage(image: Image): BinaryImage {
-    const binaryData: boolean[] = new Array(image.width * image.height);
+    const binaryData: boolean[] = new Array<boolean>(image.width * image.height);
     for (let i = 0; i < image.height; i++) {
       for (let j = 0; j < image.width; j++) {
         binaryData[i * image.width + j] = ImageProcessorService.getPixel(image, i, j) > 0;
@@ -170,5 +176,19 @@ export class ImageProcessorService {
       }
     }
     return newImg;
+  }
+
+  private replaceColor(image: Image, beforeGrayscale: number, now: Color) {
+    for (let row = 0; row < image.height; row++) {
+      for (let col = 0; col < image.width; col++) {
+        const index = ImageProcessorService.getPixelIndex(image, row, col);
+        const pixel = image.data[index];
+        if (pixel === beforeGrayscale) {
+          image.data[index] = now.r;
+          image.data[index + 1] = now.g;
+          image.data[index + 2] = now.b;
+        }
+      }
+    }
   }
 }
