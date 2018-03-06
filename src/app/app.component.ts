@@ -51,7 +51,7 @@ export class AppComponent implements OnInit {
     this.tiltControl.init();
   }
 
-  private restartGame() {
+  restartGame() {
     this.randomlyPlacePlayer();
     this.randomlyPlaceWhole();
     this.paused = false;

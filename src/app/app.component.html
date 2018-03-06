@@ -17,6 +17,9 @@
       <button class="btn btn-success" (click)="cameraInput.click()">
         <span class="fas fa-camera"></span>
       </button>
+      <button class="btn btn-danger" (click)="restartGame()">
+        <span class="fas fa-sync"></span>
+      </button>
     </div>
   </div>
   <div class="vertical-center" [hidden]="!paused" (click)="centerTextClicked()">
