@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DotModel, Position} from './dot/dot.model';
-import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 import {Image, ImageProcessorService} from './image-processor.service';
 import {HitDetectorService, HitDirection} from './hit-detector.service';
 import jpeg from 'jpeg-js';
@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
   centerText: string;
   image: string | SafeUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   maskImg: string | SafeUrl = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+  customImageUploaded = false;
 
   constructor(private sanitizer: DomSanitizer,
               private imageProcessor: ImageProcessorService,
@@ -113,6 +114,7 @@ export class AppComponent implements OnInit {
             this.hitDetector.imageMask = result.mask;
 
             this.restartGame();
+            this.customImageUploaded = true;
           }, 10);
         }, 10);
       }, 10);

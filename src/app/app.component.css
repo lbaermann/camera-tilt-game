@@ -11,6 +11,10 @@
   justify-content: center;
 }
 
+.mask-image {
+  opacity: 0.5;
+}
+
 .center-text {
   font-size: xx-large;
   background: rgba(0, 0, 0, 0.76);

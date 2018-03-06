@@ -4,7 +4,7 @@
          (change)="cameraChanged($event.target.files)" capture>
 
   <img class="position-absolute full-screen" [src]="image">
-  <img class="position-absolute full-screen" style="opacity: 0.5" [src]="maskImg">
+  <img class="position-absolute full-screen mask-image" [src]="maskImg" hidden #maskImgBox>
 
   <div class="position-absolute full-screen">
     <app-dot styleName='whole' [model]="whole"></app-dot>
@@ -19,6 +19,15 @@
       </button>
       <button class="btn btn-danger" (click)="restartGame()">
         <span class="fas fa-sync"></span>
+      </button>
+      <button [hidden]="!customImageUploaded" class="btn btn-outline-info"
+              (click)="maskImgBox.hidden = !maskImgBox.hidden">
+        <span [hidden]="!maskImgBox.hidden">
+          <span class="fas fa-eye"></span>
+        </span>
+        <span [hidden]="maskImgBox.hidden">
+          <span class="fas fa-eye-slash"></span>
+        </span>
       </button>
     </div>
   </div>
