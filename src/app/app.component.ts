@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {DotModel, Position} from './dot/dot.model';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {BinaryImage, Image, ImageProcessorService} from './image-processor.service';
+import {Image, ImageProcessorService} from './image-processor.service';
 import {HitDetectorService, HitDirection} from './hit-detector.service';
 import jpeg from 'jpeg-js';
 import {TiltControlService} from './tilt-control.service';
@@ -211,7 +211,7 @@ export class AppComponent implements OnInit {
       this.score++;
       this.randomlyPlaceWhole();
       this.randomlyPlacePlayer();
-      DotModel.friction = 0.8 + Math.random() * 0.19; // From 0.8 to 0.99 is ok
+      DotModel.friction = 0.9 + Math.random() * 0.099; // From 0.9 to 0.999 is ok
     }
   }
 }

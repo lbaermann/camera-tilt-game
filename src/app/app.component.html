@@ -1,4 +1,4 @@
-<div class="background">
+<div class="background position-absolute full-screen">
   <input class="invisible position-absolute"
          #cameraInput type="file" accept="image/jpeg" title="Test"
          (change)="cameraChanged($event.target.files)" capture>
@@ -18,9 +18,9 @@
         <span class="fas fa-camera"></span>
       </button>
     </div>
-    <div class="vertical-center" [hidden]="!paused" (click)="centerTextClicked()">
-      <p class="center-text" [hidden]="!paused">{{centerText}}</p>
-    </div>
+  </div>
+  <div class="vertical-center" [hidden]="!paused" (click)="centerTextClicked()">
+    <p class="center-text" [hidden]="!paused">{{centerText}}</p>
   </div>
 
 </div>
