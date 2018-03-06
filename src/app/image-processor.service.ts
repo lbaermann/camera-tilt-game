@@ -35,10 +35,13 @@ export class ImageProcessorService {
 
     const downscaled1 = image; // this.scaleDownRelativeToWindow(image, 2);
     const downscaled2 = this.scaleDownRelativeToWindow(downscaled1, 8);
-    const binary = this.extractBinaryImage(downscaled2);
+
+    const rotate1 = this.rotateImage(downscaled1);
+    const rotate2 = this.rotateImage(downscaled2);
+    const binary = this.extractBinaryImage(rotate2);
 
     return {
-      real: downscaled1,
+      real: rotate1,
       mask: binary
     };
   }
@@ -150,5 +153,22 @@ export class ImageProcessorService {
     for (let j = 0; j < 4; j++) {
       data[i + j] = resultingPixel;
     }
+  }
+
+  private rotateImage(image: Image): Image {
+    const rotatedData = new Uint8Array(image.height * image.width * 4);
+    const newImg = {
+      width: image.height,
+      height: image.width,
+      data: rotatedData
+    };
+    for (let row = 0; row < image.height; row++) {
+      for (let col = 0; col < image.width; col++) {
+        this.setPixel(rotatedData,
+          ImageProcessorService.getPixelIndex(newImg, col, image.height - row),
+          ImageProcessorService.getPixel(image, row, col));
+      }
+    }
+    return newImg;
   }
 }
