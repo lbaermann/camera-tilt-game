@@ -11,6 +11,7 @@ const START_STRING = 'Press to start';
 const WAIT_STRING = 'Please wait...';
 const WAIT_DECODING_STRING = 'Decoding image...';
 const WAIT_TRANSFORMING_STRING = 'Transforming image...';
+const WAIT_DISPLAYING_STRING = 'Displaying image...';
 
 @Component({
   selector: 'app-root',
@@ -98,15 +99,23 @@ export class AppComponent implements OnInit {
       const original = new Uint8Array(reader.result);
 
       this.centerText = WAIT_DECODING_STRING;
-      const image: Image = jpeg.decode(original, true);
-      this.centerText = WAIT_TRANSFORMING_STRING;
-      const result = this.imageProcessor.consumeImage(image);
+      setTimeout(() => {
+        const image: Image = jpeg.decode(original, true);
+        this.centerText = WAIT_TRANSFORMING_STRING;
 
-      this.image = this.createDataUrl(result.real);
-      this.maskImg = this.createDataUrl(result.maskImg);
-      this.hitDetector.imageMask = result.mask;
+        setTimeout(() => {
+          const result = this.imageProcessor.consumeImage(image);
+          this.centerText = WAIT_DISPLAYING_STRING;
 
-      this.restartGame();
+          setTimeout(() => {
+            this.image = this.createDataUrl(result.real);
+            this.maskImg = this.createDataUrl(result.maskImg);
+            this.hitDetector.imageMask = result.mask;
+
+            this.restartGame();
+          }, 10);
+        }, 10);
+      }, 10);
     };
   }
 
