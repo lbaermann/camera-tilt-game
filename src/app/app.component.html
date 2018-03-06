@@ -6,18 +6,21 @@
   <img class="position-absolute full-screen" [src]="image">
   <img class="position-absolute full-screen" style="opacity: 0.5" [src]="maskImg">
 
-  <app-dot styleName='whole' [model]="whole"></app-dot>
-  <app-dot styleName='player' [model]="player"></app-dot>
+  <div class="position-absolute full-screen">
+    <app-dot styleName='whole' [model]="whole"></app-dot>
+    <app-dot styleName='player' [model]="player"></app-dot>
 
-  <span>Friction: {{currentFriction | number:'1.1-3' }}</span>
-  <span class="float-right">Score: {{score}}</span>
-  <div class="fixed-bottom">
-    <button class="btn btn-success" (click)="cameraInput.click()">
-      <span class="fas fa-camera"></span>
-    </button>
-  </div>
-  <div class="vertical-center" [hidden]="!paused" (click)="centerTextClicked()">
-    <p class="center-text" [hidden]="!paused">{{centerText}}</p>
+    <span class="float-left friction-label">Friction: {{currentFriction | number:'1.1-3' }}</span>
+    <span class="float-right score-label">Score: {{score}}</span>
+
+    <div class="fixed-bottom">
+      <button class="btn btn-success" (click)="cameraInput.click()">
+        <span class="fas fa-camera"></span>
+      </button>
+    </div>
+    <div class="vertical-center" [hidden]="!paused" (click)="centerTextClicked()">
+      <p class="center-text" [hidden]="!paused">{{centerText}}</p>
+    </div>
   </div>
 
 </div>
