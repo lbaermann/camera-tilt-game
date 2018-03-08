@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import * as MobileDetect from 'mobile-detect';
 
 export interface Image {
   data: Uint8Array;
@@ -32,6 +33,11 @@ export class ImageProcessorService {
     return (row * image.width + col) * 4;
   }
 
+  private static shouldRotate(): boolean {
+    const md = new MobileDetect(window.navigator.userAgent);
+    return md.phone() !== null;
+  }
+
   consumeImage(image: Image): { real: Image, maskImg: Image, mask: BinaryImage } {
     this.convertToBlackWhite(image.data);
     for (let i = 0; i < 1; i++) {
@@ -39,7 +45,12 @@ export class ImageProcessorService {
       this.morphologicOp(image, (top, right, bottom, left) => top && right && bottom && left);
     }
 
-    const rotate = this.rotateImage(image);
+    let rotate;
+    if (ImageProcessorService.shouldRotate()) {
+      rotate = this.rotateImage(image);
+    } else {
+      rotate = image;
+    }
     const downscale = this.scaleDownRelativeToWindow(rotate, 5);
     const binary = this.extractBinaryImage(downscale);
 
