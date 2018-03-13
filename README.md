@@ -1,10 +1,18 @@
-# WebApp
+# Camera-Tilt-Game
+
+This is a simple demo game with a ball which can be controlled by tilt
+control. Additionally, you can pick a photo with the camera
+button and play with that background. The ball detects hits at 
+dark parts of the image and reflects.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.5.5.
 
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+Use `npm run start-public` to run the development server accessible from all IP addresses your computer has,
+so that you can access the server from your smartphone.
 
 ## Code scaffolding
 
